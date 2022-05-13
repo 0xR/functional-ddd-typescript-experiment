@@ -1,20 +1,25 @@
 import * as t from 'io-ts';
 
-const customerInfoCodec = t.interface({
+const customerInfoDtoCodec = t.interface({
   FirstName: t.string,
   LastName: t.string,
   EmailAddress: t.string,
 });
 
-export type CustomerInfo = t.TypeOf<typeof customerInfoCodec>;
+export type CustomerInfoDto = t.TypeOf<typeof customerInfoDtoCodec>;
 
-
-const orderFormCodec = t.interface({
-  OrderId: t.string,
-  CustomerInfo: customerInfoCodec,
-  // ShippingAddress: AddressDto
-  // BillingAddress: AddressDto
-  // Lines: OrderFormLineDto list
+const orderFormLineDtoCodec = t.interface({
+  OrderLineId: t.string,
+  ProductCode: t.string,
+  Quantity: t.number
 });
 
-export type OrderForm = t.TypeOf<typeof orderFormCodec>;
+export type OrderFormLineDto = t.TypeOf<typeof orderFormLineDtoCodec>;
+
+const orderFormDtoCodec = t.interface({
+  OrderId: t.string,
+  CustomerInfo: customerInfoDtoCodec,
+  Lines: t.array(orderFormLineDtoCodec)
+});
+
+export type OrderFromDto = t.TypeOf<typeof orderFormDtoCodec>;
