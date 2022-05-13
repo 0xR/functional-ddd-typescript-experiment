@@ -2,14 +2,21 @@ import { OrderFormDto, orderFormDtoCodec } from './PlaceOrder.Dto';
 import { Database } from './database';
 import { Option } from 'fp-ts/Option';
 import { validateOrder } from './PlaceOrder.Implementation';
-import { isLeft } from 'fp-ts/Either';
+import { chain, mapLeft, match, right } from 'fp-ts/Either';
+import { flow } from 'fp-ts/function';
+import * as Identity from 'fp-ts/Identity';
+import { Errors } from 'io-ts';
 
 function orderKey(orderId: string) {
   return `order-${orderId}`;
 }
 
-function storeOrder(order: OrderFormDto, { database }: { database: Database }) {
+function storeOrder(
+  order: OrderFormDto,
+  { database }: { database: Database },
+): OrderFormDto {
   database.set(orderKey(order.OrderId), order);
+  return order;
 }
 
 function loadOrder(
@@ -28,28 +35,22 @@ const dependencies = {
 };
 
 export function orderApi({ body }: { body: unknown }) {
-  // IO
-  const orderFormEither = orderFormDtoCodec.decode(body);
-  if (isLeft(orderFormEither)) {
-    return orderFormEither.left;
-  }
-
-  const existingFormEither = loadOrder(
-    orderFormEither.right.OrderId,
-    dependencies,
+  const workflow = flow(
+    (request: unknown) => {
+      return mapLeft(
+        () => new Error('Could not decode OrderFromDto'),
+      )(orderFormDtoCodec.decode(request));
+    },
+    chain((orderFormDto: OrderFormDto) => {
+      const order = loadOrder(orderFormDto.OrderId, dependencies);
+      return validateOrder(orderFormDto, order);
+    }),
+    chain((orderFormDto: OrderFormDto) =>
+      right(storeOrder(orderFormDto, dependencies)),
+    ),
   );
 
-  //Pure code
-  const validationEither = validateOrder(
-    orderFormEither.right,
-    existingFormEither,
-  );
+  const result = workflow(body);
 
-  if (isLeft(validationEither)) {
-    return validationEither.left;
-  }
-
-  // IO
-  storeOrder(orderFormEither.right, dependencies);
-  return validationEither.right;
+  return match(Identity.of, Identity.of)(result)
 }
