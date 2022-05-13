@@ -6,10 +6,15 @@ const customerInfoCodec = t.interface({
   EmailAddress: t.string,
 });
 
-const orderFromCodec = t.interface({
+export type CustomerInfo = t.TypeOf<typeof customerInfoCodec>;
+
+
+const orderFormCodec = t.interface({
   OrderId: t.string,
   CustomerInfo: customerInfoCodec,
   // ShippingAddress: AddressDto
   // BillingAddress: AddressDto
   // Lines: OrderFormLineDto list
 });
+
+export type OrderForm = t.TypeOf<typeof orderFormCodec>;
