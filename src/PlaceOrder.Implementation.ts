@@ -4,7 +4,10 @@ import { Either, left, right } from 'fp-ts/Either';
 
 export type AppValidation<T> = Either<Error, T>;
 
-export function validateOrder(order: OrderFormDto, existingOrder: Option<OrderFormDto>): AppValidation<OrderFormDto> {
+export function validateOrder(
+  order: OrderFormDto,
+  existingOrder: Option<OrderFormDto>,
+): AppValidation<OrderFormDto> {
   if (isNone(existingOrder)) {
     return right(order);
   }

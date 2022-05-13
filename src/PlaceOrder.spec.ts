@@ -6,22 +6,21 @@ it('should now allow posting the same order twice', () => {
     OrderId: '01',
     CustomerInfo: {
       EmailAddress: 'email',
-      FirstName: "firstname",
-      LastName: "last"
+      FirstName: 'firstname',
+      LastName: 'last',
     },
     Lines: [
       {
         OrderLineId: '01',
-        ProductCode: "product01",
-        Quantity: 9001
-      }
-
-    ]
-  }
+        ProductCode: 'product01',
+        Quantity: 9001,
+      },
+    ],
+  };
   const result = orderApi({
     body: orderForm,
   });
-  expect((result)).toMatchObject({ OrderId: orderForm.OrderId });
+  expect(result).toMatchObject({ OrderId: orderForm.OrderId });
   const result2 = orderApi({
     body: orderForm,
   });
