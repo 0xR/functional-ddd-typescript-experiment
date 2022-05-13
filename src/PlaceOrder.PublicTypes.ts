@@ -16,10 +16,15 @@ const orderFormLineDtoCodec = t.interface({
 
 export type OrderFormLineDto = t.TypeOf<typeof orderFormLineDtoCodec>;
 
-export const orderFormDtoCodec = t.interface({
+const x = (deps) => (unvalidatedOrder) => {
+
+}
+
+const unvalidatedOrderFormCodec = t.interface({
+  _tag: 'xx',
   OrderId: t.string,
   CustomerInfo: customerInfoDtoCodec,
   Lines: t.array(orderFormLineDtoCodec)
 });
 
-export type OrderFormDto = t.TypeOf<typeof orderFormDtoCodec>;
+export type OrderFormDto = t.TypeOf<typeof unvalidatedOrderFormCodec>;
